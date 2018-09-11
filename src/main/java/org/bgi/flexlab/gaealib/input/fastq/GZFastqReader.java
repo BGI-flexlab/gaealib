@@ -1,4 +1,4 @@
-package org.bgi.flexlab.gaealib;
+package org.bgi.flexlab.gaealib.input.fastq;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -180,13 +180,19 @@ public class GZFastqReader implements RecordReader<Text, Text> {
 				int index = st[0].lastIndexOf("/");
 				if (index < 0) {
 					String[] splitTmp = st[0].split(" ");
-					char ch = splitTmp[1].charAt(0);
-					if (ch != '1' && ch != '2')
-						throw new RuntimeException("error fq format at reads:"
+					char ch;
+					if(splitTmp.length == 1) {
+						ch = '1';
+						st[0] = splitTmp[0] + "/" + ch;
+					}else {
+						ch = splitTmp[1].charAt(0);
+						if (ch != '1' && ch != '2')
+							throw new RuntimeException("error fq format at reads:"
 								+ st[0]);
 
-					st[0] = splitTmp[0] + "_1" + splitTmp[1].substring(1) + "/"
+						st[0] = splitTmp[0] + "_1" + splitTmp[1].substring(1) + "/"
 							+ ch;
+					}
 					index = st[0].lastIndexOf("/");
 				}
 				String tempkey = st[0].substring(1, index).trim();

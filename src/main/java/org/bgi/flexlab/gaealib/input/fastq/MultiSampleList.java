@@ -1,4 +1,4 @@
-package org.bgi.flexlab.gaealib;
+package org.bgi.flexlab.gaealib.input.fastq;
 
 import java.io.BufferedReader;
 import java.io.File;

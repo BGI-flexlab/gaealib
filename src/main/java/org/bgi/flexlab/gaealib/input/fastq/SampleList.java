@@ -1,4 +1,4 @@
-package org.bgi.flexlab.gaealib;
+package org.bgi.flexlab.gaealib.input.fastq;
 
 public class SampleList {
 	private int id;
