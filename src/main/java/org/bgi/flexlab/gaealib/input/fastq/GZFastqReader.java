@@ -54,7 +54,7 @@ public class GZFastqReader implements RecordReader<Text, Text> {
 
 		// System.err.println("split:" + split.getPath().toString());
 		String multiSampleList = job.get("multiSampleList");
-		if (multiSampleList != null && multiSampleList != "") {
+		if (multiSampleList != null && !multiSampleList.equals("")) {
 			MultiSampleList samplelist;
 			samplelist = new MultiSampleList(multiSampleList, false);
 			SampleList slist = samplelist.getID(split.getPath().toString());
@@ -140,14 +140,13 @@ public class GZFastqReader implements RecordReader<Text, Text> {
 			String[] st = new String[4];
 			int startIndex = 0;
 
-			if (firstLine != "") {
+			if (!firstLine.equals("")) {
 				st[0] = firstLine;
 				startIndex = 1;
 				firstLine = "";
 			}
 
-			int i = 0;
-			for (i = startIndex; i < 4; i++) {
+			for (int i = startIndex; i < 4; i++) {
 				newSize = in.readLine(tmp, maxLineLength, Math.max(
 						(int) Math.min(Integer.MAX_VALUE, end - pos),
 						maxLineLength));
@@ -159,11 +158,10 @@ public class GZFastqReader implements RecordReader<Text, Text> {
 				pos += newSize;
 				st[i] = tmp.toString();
 			}
-			
+
 			if(st[0].charAt(0)=='@' && st[1].charAt(0)=='@'){
-				for(i=1;i<4;i++){
-					st[i-1] = st[i];
-				}
+				// st数组元素前移一位
+				System.arraycopy(st, 1, st, 0, 3);
 				newSize = in.readLine(tmp, maxLineLength, Math.max(
 						(int) Math.min(Integer.MAX_VALUE, end - pos),
 						maxLineLength));
@@ -175,7 +173,7 @@ public class GZFastqReader implements RecordReader<Text, Text> {
 				pos += newSize;
 				st[3] = tmp.toString();
 			}
-			
+
 			if (!iswrongFq) {
 				int index = st[0].lastIndexOf("/");
 				if (index < 0) {
@@ -196,7 +194,7 @@ public class GZFastqReader implements RecordReader<Text, Text> {
 					index = st[0].lastIndexOf("/");
 				}
 				String tempkey = st[0].substring(1, index).trim();
-				String keyIndex = st[0].substring(index + 1);
+				char keyIndex = st[0].charAt(index + 1);
 
 				if (sampleID == null || sampleID.equals("") || sampleID.equals("+")) {
 					key.set(">" + st[2]);
@@ -212,12 +210,6 @@ public class GZFastqReader implements RecordReader<Text, Text> {
 			}
 			break;
 		}
-		if (newSize == 0 || iswrongFq) {
-			key = null;
-			value = null;
-			return false;
-		} else {
-			return true;
-		}
+		return !(newSize == 0 || iswrongFq);
 	}
 }
